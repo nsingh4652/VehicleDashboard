@@ -1,10 +1,12 @@
 package com.example.vehicledashboard.presentation.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -14,8 +16,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.vehicledashboard.domain.model.Vehicle
+import com.example.vehicledashboard.presentation.util.getVehicleImage
 
 @Composable
 fun VehicleCard(
@@ -23,6 +28,7 @@ fun VehicleCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -32,15 +38,30 @@ fun VehicleCard(
             defaultElevation = 2.dp
         )
     ) {
+
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+
+            Image(
+                painter = painterResource(
+                    id = getVehicleImage(vehicle)
+                ),
+                contentDescription = "${vehicle.name} ${vehicle.model}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(145.dp),
+                contentScale = ContentScale.Fit
+            )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Column {
+
                     Text(
                         text = vehicle.name,
                         style = MaterialTheme.typography.titleLarge
@@ -54,7 +75,11 @@ fun VehicleCard(
                 }
 
                 Text(
-                    text = if (vehicle.isOnline) "Online" else "Offline",
+                    text = if (vehicle.isOnline) {
+                        "Online"
+                    } else {
+                        "Offline"
+                    },
                     style = MaterialTheme.typography.labelLarge,
                     color = if (vehicle.isOnline) {
                         MaterialTheme.colorScheme.primary
@@ -68,13 +93,20 @@ fun VehicleCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Battery ${vehicle.batteryPercentage}%")
-                Text("${vehicle.estimatedRangeKm} km range")
+
+                Text(
+                    text = "Battery ${vehicle.batteryPercentage}%"
+                )
+
+                Text(
+                    text = "${vehicle.estimatedRangeKm} km range"
+                )
             }
 
             LinearProgressIndicator(
                 progress = {
-                    vehicle.batteryPercentage.coerceIn(0, 100) / 100f
+                    vehicle.batteryPercentage
+                        .coerceIn(0, 100) / 100f
                 },
                 modifier = Modifier.fillMaxWidth()
             )

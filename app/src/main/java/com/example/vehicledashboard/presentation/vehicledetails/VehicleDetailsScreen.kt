@@ -1,5 +1,6 @@
 package com.example.vehicledashboard.presentation.vehicledetails
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.vehicledashboard.presentation.util.formatLastUpdated
+import com.example.vehicledashboard.presentation.util.getVehicleImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,6 +36,7 @@ fun VehicleDetailsScreen(
     onBack: () -> Unit,
     onRefresh: () -> Unit
 ) {
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,26 +57,31 @@ fun VehicleDetailsScreen(
         when {
 
             state.isLoading && state.vehicle == null -> {
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
+
                     CircularProgressIndicator()
                 }
             }
 
             state.vehicle == null -> {
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
+
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+
                         Text(
                             text = state.errorMessage ?: "Vehicle not found",
                             color = MaterialTheme.colorScheme.error
@@ -90,6 +101,7 @@ fun VehicleDetailsScreen(
             }
 
             else -> {
+
                 val vehicle = state.vehicle
 
                 Column(
@@ -111,9 +123,21 @@ fun VehicleDetailsScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
+                    Image(
+                        painter = painterResource(
+                            id = getVehicleImage(vehicle)
+                        ),
+                        contentDescription = "${vehicle.name} ${vehicle.model}",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp),
+                        contentScale = ContentScale.Fit
+                    )
+
                     Card(
                         modifier = Modifier.fillMaxWidth()
                     ) {
+
                         Column(
                             modifier = Modifier.padding(18.dp)
                         ) {
@@ -149,7 +173,8 @@ fun VehicleDetailsScreen(
                             )
 
                             Text(
-                                text = "Estimated range: ${vehicle.estimatedRangeKm} km"
+                                text =
+                                    "Estimated range: ${vehicle.estimatedRangeKm} km"
                             )
                         }
                     }
@@ -184,11 +209,14 @@ fun VehicleDetailsScreen(
 
                     DetailCard(
                         title = "Last updated",
-                        value = vehicle.lastUpdated,
+                        value = formatLastUpdated(
+                            vehicle.lastUpdatedMillis
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     state.errorMessage?.let { message ->
+
                         Text(
                             text = message,
                             color = MaterialTheme.colorScheme.error
@@ -196,6 +224,7 @@ fun VehicleDetailsScreen(
                     }
 
                     if (state.isRefreshing) {
+
                         LinearProgressIndicator(
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -206,6 +235,7 @@ fun VehicleDetailsScreen(
                         enabled = !state.isRefreshing,
                         modifier = Modifier.fillMaxWidth()
                     ) {
+
                         Text(
                             text = if (state.isRefreshing) {
                                 "Refreshing..."
@@ -226,13 +256,16 @@ private fun DetailCard(
     value: String,
     modifier: Modifier = Modifier
 ) {
+
     Card(
         modifier = modifier
     ) {
+
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
+
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,

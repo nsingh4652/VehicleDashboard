@@ -8,16 +8,17 @@ class MockVehicleDataSource {
     private var refreshCount = 0
 
     suspend fun fetchVehicles(): List<Vehicle> {
-        // Simulate a small network delay.
+        // Simulates the delay we would normally get from a REST API call.
         delay(800)
 
         refreshCount++
 
-        // Simulate an occasional backend failure.
-        // This helps us verify the error state in the UI.
+        // Every fifth request fails so the app's error handling can be tested.
         if (refreshCount % 5 == 0) {
             throw IllegalStateException("Unable to reach server")
         }
+
+        val currentTime = System.currentTimeMillis()
 
         return listOf(
             Vehicle(
@@ -29,7 +30,7 @@ class MockVehicleDataSource {
                 currentSpeedKmph = 42,
                 odometerKm = 1248,
                 isOnline = true,
-                lastUpdated = "Just now"
+                lastUpdatedMillis = currentTime
             ),
             Vehicle(
                 id = "vehicle_2",
@@ -40,7 +41,7 @@ class MockVehicleDataSource {
                 currentSpeedKmph = 28,
                 odometerKm = 2384,
                 isOnline = true,
-                lastUpdated = "2 minutes ago"
+                lastUpdatedMillis = currentTime
             ),
             Vehicle(
                 id = "vehicle_3",
@@ -51,7 +52,9 @@ class MockVehicleDataSource {
                 currentSpeedKmph = 0,
                 odometerKm = 3210,
                 isOnline = false,
-                lastUpdated = "1 hour ago"
+
+                // An offline vehicle keeps its older last-known update time.
+                lastUpdatedMillis = currentTime - (60 * 60 * 1000L)
             )
         )
     }

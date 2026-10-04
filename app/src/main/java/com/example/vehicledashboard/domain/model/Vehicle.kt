@@ -15,5 +15,5 @@ data class Vehicle(
     val currentSpeedKmph: Int,
     val odometerKm: Int,
     val isOnline: Boolean,
-    val lastUpdated: String
+    val lastUpdatedMillis: Long
 )
